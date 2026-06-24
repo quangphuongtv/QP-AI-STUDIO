@@ -199,6 +199,166 @@ interface ConversationNode {
   region?: string;
 }
 
+const voiceAgeMapping: Record<string, {
+  ageGroup: string;
+  expressions: string[];
+  explanation: string;
+}> = {
+  // Female voices
+  Zephyr: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Cheerful/Happy (Vui vẻ)", "Friendly/Warm (Thân thiện)"],
+    explanation: "Giọng trong trẻo, sáng và tràn đầy năng lượng tươi trẻ, cực kỳ phù hợp các nhân vật thanh niên năng nổ hoặc học sinh."
+  },
+  Kore: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Confident (Tự tin)"],
+    explanation: "Giọng nữ kiên quyết, sắc bén và chắc chắn, lý tưởng cho nhân vật nữ cường, lãnh đạo trẻ hoặc các tình huống kịch tính."
+  },
+  Leda: {
+    ageGroup: "Children / Trẻ em (Nữ trẻ)",
+    expressions: ["Children (Trẻ em)", "Cheerful/Happy (Vui vẻ)", "Childlike (Trẻ con)"],
+    explanation: "Giọng nữ rất trẻ, trong sáng như thiếu nhi hoặc thiếu nữ tuổi học trò tinh nghịch quý phái."
+  },
+  Aoede: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Calm/Serene (Bình thản)", "Friendly/Warm (Thân thiện)"],
+    explanation: "Giọng tự nhiên, phóng khoáng, thích hợp làm nhân vật chính trong câu chuyện chữa lành hoặc tâm sự sâu lắng."
+  },
+  Callirrhoe: {
+    ageGroup: "Children / Trẻ em (Nữ trẻ)",
+    expressions: ["Children (Trẻ em)", "Friendly/Warm (Thân thiện)", "Childlike (Trẻ con)"],
+    explanation: "Giọng nữ thân thiện, dễ mến, mượt mà thích hợp cho nhân vật bé gái hoặc giáo viên mầm non đối thoại với trẻ em."
+  },
+  Autonoe: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Cheerful/Happy (Vui vẻ)", "Excited/Enthusiastic (Hào hứng)"],
+    explanation: "Giọng nữ tươi tắn, sáng sủa, hoạt náo viên năng lượng cực cao."
+  },
+  Despina: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Professional/Corporate (Chuyên nghiệp/Kinh doanh)"],
+    explanation: "Giọng nữ mượt mà, chỉn chu, mang phong cách lịch sự thích hợp vai diễn nhân viên văn phòng, thời sự."
+  },
+  Erinome: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Calm/Serene (Bình thản)", "Formal (Trang trọng)"],
+    explanation: "Giọng nữ tinh tế, rõ ràng và chuẩn mực, thích hợp cho lời dẫn chuyện nhẹ nhàng nhưng chuyên nghiệp."
+  },
+  Laomedeia: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Cheerful/Happy (Vui vẻ)", "Excited/Enthusiastic (Hào hứng)"],
+    explanation: "Giọng sôi nổi, tích cực, cực kỳ lôi cuốn người nghe với nhịp độ vui tươi."
+  },
+  Achernar: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Calm/Serene (Bình thản)", "Friendly/Warm (Thân thiện)"],
+    explanation: "Giọng nữ mềm mại, nhẹ nhàng, lý tưởng cho các thước phim lãng mạn hoặc thiền định, nhẹ nhàng."
+  },
+  Gacrux: {
+    ageGroup: "Old person / Người già & Trung niên (Nữ)",
+    expressions: ["Old person (Người già)", "Calm/Serene (Bình thản)", "Formal (Trang trọng)"],
+    explanation: "Giọng trung niên hoặc lớn tuổi, đĩnh đạc, chững chạc và trưởng thành, thích hợp cho nhân vật người mẹ, người bà hiền hậu."
+  },
+  Pulcherrima: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Excited/Enthusiastic (Hào hứng)", "Cheerful/Happy (Vui vẻ)"],
+    explanation: "Giọng hướng ngoại, biểu cảm sống động xuất sắc, thích hợp cho kịch bản quảng cáo, vui tươi."
+  },
+  Vindemiatrix: {
+    ageGroup: "Young / Trẻ trung (Nữ)",
+    expressions: ["Young (Trẻ trung)", "Friendly/Warm (Thân thiện)", "Calm/Serene (Bình thản)"],
+    explanation: "Giọng dịu dàng, nhẹ nhàng thích hợp cho các vai diễn nữ chính có chiều sâu tâm trạng."
+  },
+  Sulafat: {
+    ageGroup: "Old person / Người già & Trung niên (Nữ)",
+    expressions: ["Old person (Người già)", "Friendly/Warm (Thân thiện)", "Inspirational/Encouraging (Truyền cảm hứng)"],
+    explanation: "Giọng trầm ấm, điềm đạm, ấm áp, mang đậm tính thuyết phục của người dày dặn kinh nghiệm."
+  },
+
+  // Male voices
+  Puck: {
+    ageGroup: "Young / Trẻ trung (Nam)",
+    expressions: ["Young (Trẻ trung)", "Cheerful/Happy (Vui vẻ)", "Excited/Enthusiastic (Hào hứng)"],
+    explanation: "Giọng nam sôi động, năng lượng bùng nổ, hoàn hảo cho các nhân vật thanh niên tinh nghịch, năng nổ."
+  },
+  Charon: {
+    ageGroup: "Young / Trẻ trung (Nam)",
+    expressions: ["Young (Trẻ trung)", "Professional/Corporate (Chuyên nghiệp/Kinh doanh)", "Formal (Trang trọng)"],
+    explanation: "Giọng nam trực diện, dứt khoát, chuyên nghiệp sắc sảo cho môi trường doanh nghiệp hoặc thuyết trình."
+  },
+  Fenrir: {
+    ageGroup: "Young / Trẻ trung (Nam)",
+    expressions: ["Young (Trẻ trung)", "Excited/Enthusiastic (Hào hứng)", "Confident (Tự tin)"],
+    explanation: "Giọng nam hào khởi, tràn đầy nhuệ khí chiến đấu, lý tưởng cho vai nam chính mạnh mẽ, dũng cảm."
+  },
+  Orus: {
+    ageGroup: "Old person / Người già & Trung niên (Nam)",
+    expressions: ["Old person (Người già)", "Calm/Serene (Bình thản)", "Confident (Tự tin)"],
+    explanation: "Giọng nam điềm đạm, trầm bình tĩnh mang phong thái của một bậc tiền bối uy nghiêm."
+  },
+  Enceladus: {
+    ageGroup: "Old person / Người già & Trung niên (Nam)",
+    expressions: ["Old person (Người già)", "Calm/Serene (Bình thản)", "Sad (Buồn bã)"],
+    explanation: "Giọng nam trầm lắng, kéo dài mộc mạc, lý tưởng cho các nhân vật sâu sắc, người cha, người ông từng trải tâm sự."
+  },
+  Iapetus: {
+    ageGroup: "Young / Trẻ trung (Nam)",
+    expressions: ["Young (Trẻ trung)", "Confident (Tự tin)", "Professional/Corporate (Chuyên nghiệp/Kinh doanh)"],
+    explanation: "Giọng nam rành mạch, rõ chữ tự tin, thu hút sự chú ý nhanh chóng thích hợp cho bài thuyết giảng."
+  },
+  Umbriel: {
+    ageGroup: "Old person / Người già & Trung niên (Nam)",
+    expressions: ["Old person (Người già)", "Calm/Serene (Bình thản)", "Friendly/Warm (Thân thiện)"],
+    explanation: "Giọng nam thong thả, thư thái như lời kể chậm rãi của một ông lão ngồi uống trà."
+  },
+  Algieba: {
+    ageGroup: "Young / Trẻ trung (Nam)",
+    expressions: ["Young (Trẻ trung)", "Friendly/Warm (Thân thiện)", "Cheerful/Happy (Vui vẻ)"],
+    explanation: "Giọng nam trôi chảy, lưu loát, gần gũi, thích hợp làm hướng dẫn viên du lịch hoặc bạn học dí dỏm."
+  },
+  Algenib: {
+    ageGroup: "Old person / Người già & Trung niên (Nam)",
+    expressions: ["Old person (Người già)", "Sad (Buồn bã)", "Raspy/Gravelly (Giọng khàn)"],
+    explanation: "Giọng nam trầm khàn, bụi bặm và có nét phong trần của người có tuổi hoặc trải qua sương gió."
+  },
+  Rasalgethi: {
+    ageGroup: "Old person / Người già & Trung niên (Nam)",
+    expressions: ["Old person (Người già)", "Storytelling (Kể chuyện cổ tích)", "Inspirational/Encouraging (Truyền cảm hứng)"],
+    explanation: "Giọng kể chuyện truyền cảm tuyệt vời, ấm áp thích hợp dẫn dắt tâm trạng hoặc kể chuyện đêm khuya."
+  },
+  Alnilam: {
+    ageGroup: "Old person / Người già & Trung niên (Nam)",
+    expressions: ["Old person (Người già)", "Confident (Tự tin)", "Formal (Trang trọng)"],
+    explanation: "Giọng nam đĩnh đạc, đong đầy tự tin, mang vẻ vương giả hoặc lãnh tụ lão thành."
+  },
+  Schedar: {
+    ageGroup: "Young / Trẻ trung (Nam)",
+    expressions: ["Young (Trẻ trung)", "Calm/Serene (Bình thản)"],
+    explanation: "Giọng nam đồng đều, ổn định, mang phong thái vững vàng, an tâm thích hợp cho nhân vật cận vệ trung thành."
+  },
+  Achird: {
+    ageGroup: "Young / Trẻ trung (Nam)",
+    expressions: ["Young (Trẻ trung)", "Friendly/Warm (Thân thiện)"],
+    explanation: "Giọng thân thiện, gần gũi ấm áp như người bạn hàng xóm đáng mến."
+  },
+  Zubenelgenubi: {
+    ageGroup: "Old person / Người già & Trung niên (Nam)",
+    expressions: ["Old person (Người già)", "Friendly/Warm (Thân thiện)"],
+    explanation: "Giọng mộc mạc, bình dân và hết sức tự nhiên như lời bác lái tàu hoặc người nông dân đôn hậu."
+  },
+  Sadachbia: {
+    ageGroup: "Children / Trẻ em (Nam trẻ)",
+    expressions: ["Children (Trẻ em)", "Cheerful/Happy (Vui vẻ)", "Childlike (Trẻ con)"],
+    explanation: "Giọng nam hoạt bát, sinh động như một cậu bé hiếu động, lý lắc đầy phấn khởi."
+  },
+  Sadaltager: {
+    ageGroup: "Old person / Người già & Trung niên (Nam)",
+    expressions: ["Old person (Người già)", "Confident (Tự tin)", "Professional/Corporate (Chuyên nghiệp/Kinh doanh)"],
+    explanation: "Giọng nam hiểu biết, uyên bác và giàu tri thức, đặc thù cho các bậc học giả, giáo sư kỳ cựu."
+  }
+};
+
 export default function App() {
   const [sections, setSections] = useState<Section[]>([
     { id: 'prompt', title: 'Prompt Generator' },
@@ -230,6 +390,7 @@ export default function App() {
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [needsApiKey, setNeedsApiKey] = useState(false);
+  const [spendingCapExceeded, setSpendingCapExceeded] = useState(false);
   const [headerLogo, setHeaderLogo] = useState<string | null>(null);
 
   // Prompt Generator State
@@ -345,7 +506,7 @@ export default function App() {
     { id: 'Sadaltager', name: 'Sadaltager – Hiểu biết (Nam - Chuyên gia)' },
   ];
 
-  const ttsRegions = ['Default', 'North', 'Hue', 'Central', 'South'];
+  const ttsRegions = ['Default', 'North', 'Hue', 'Central', 'South', 'Southwestern'];
   
   const ttsExpressions = [
     {
@@ -611,47 +772,240 @@ export default function App() {
   const handleDownloadDoc = async () => {
     if (!generatedScript) return;
 
+    const headerShading = { fill: "1E3A8A" }; // Dark Blue / Màu xanh dương đậm
+    const alternateShading = { fill: "F8FAFC" };
+    const defaultShading = { fill: "FFFFFF" };
+
     const tableRows = [
       new TableRow({
         children: [
-          new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số TT/Phân cảnh", bold: true, font: "Calibri", size: 18 })] })] }),
-          new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Thời gian (5-8 giây)", bold: true, font: "Calibri", size: 18 })] })] }),
-          new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mô tả kịch bản chi tiết", bold: true, font: "Calibri", size: 18 })] })] }),
-          ...(scriptType === 'Whisk' 
-            ? [
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "START-FRAME IMAGE", bold: true, font: "Calibri", size: 18 })] })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "PROMPT TẠO VIDEO (VEO 3.1)", bold: true, font: "Calibri", size: 18 })] })] })
-              ]
-            : [
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "START-FRAME IMAGE", bold: true, font: "Calibri", size: 18 })] })] }),
-                new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "PROMPT TẠO VIDEO (VEO 3.1)", bold: true, font: "Calibri", size: 18 })] })] })
-              ]
-          )
+          new TableCell({ 
+            shading: headerShading,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 120 }, children: [new TextRun({ text: "STT", bold: true, font: "Calibri", size: 18, color: "FFEB3B" })] })] 
+          }),
+          new TableCell({ 
+            shading: headerShading,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 120 }, children: [new TextRun({ text: "THỜI LƯỢNG", bold: true, font: "Calibri", size: 18, color: "FFEB3B" })] })] 
+          }),
+          new TableCell({ 
+            shading: headerShading,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 120 }, children: [new TextRun({ text: "MÔ TẢ PHÂN CẢNH CHI TIẾT", bold: true, font: "Calibri", size: 18, color: "FFEB3B" })] })] 
+          }),
+          new TableCell({ 
+            shading: headerShading,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 120 }, children: [new TextRun({ text: "ẢNH BẮT ĐẦU (T2I PROMPT)", bold: true, font: "Calibri", size: 18, color: "FFEB3B" })] })] 
+          }),
+          new TableCell({ 
+            shading: headerShading,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 120 }, children: [new TextRun({ text: "CHUYỂN ĐỘNG VIDEO (I2V / MOTION PROMPT)", bold: true, font: "Calibri", size: 18, color: "FFEB3B" })] })] 
+          })
         ],
       }),
     ];
 
-    generatedScript.scenes.forEach((scene) => {
+    generatedScript.scenes.forEach((scene, index) => {
+      const isEven = index % 2 === 1;
+      const bgShading = isEven ? alternateShading : defaultShading;
+      
+      const startPrompt = scriptType === 'Whisk' 
+        ? formatPromptValue(scene.whiskPrompt) 
+        : formatPromptValue(scene.videoPrompt);
+      const motionPrompt = scriptType === 'Whisk' 
+        ? formatPromptValue(scene.movementPrompt) 
+        : formatPromptValue(scene.jsonVideoPrompt);
+
       tableRows.push(
         new TableRow({
           children: [
-            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: String(scene.id), font: "Calibri", size: 18 })] })] }),
-            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: scene.time, font: "Calibri", size: 18 })] })] }),
-            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, children: [new TextRun({ text: scene.description, font: "Calibri", size: 18 })] })] }),
-            ...(scriptType === 'Whisk' 
-              ? [
-                  new TableCell({ children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, children: [new TextRun({ text: formatPromptValue(scene.whiskPrompt), font: "Calibri", size: 18 })] })] }),
-                  new TableCell({ children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, children: [new TextRun({ text: formatPromptValue(scene.movementPrompt), font: "Calibri", size: 18 })] })] })
-                ]
-              : [
-                  new TableCell({ children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, children: [new TextRun({ text: formatPromptValue(scene.videoPrompt), font: "Calibri", size: 18 })] })] }),
-                  new TableCell({ children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, children: [new TextRun({ text: formatPromptValue(scene.jsonVideoPrompt), font: "Calibri", size: 18 })] })] })
-                ]
-            )
+            new TableCell({ 
+              shading: bgShading,
+              children: [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 100, after: 100 }, children: [new TextRun({ text: String(scene.id), font: "Calibri", size: 18, bold: true })] })] 
+            }),
+            new TableCell({ 
+              shading: bgShading,
+              children: [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 100, after: 100 }, children: [new TextRun({ text: scene.time, font: "Calibri", size: 18 })] })] 
+            }),
+            new TableCell({ 
+              shading: bgShading,
+              children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { before: 100, after: 100 }, children: [new TextRun({ text: scene.description, font: "Calibri", size: 18 })] })] 
+            }),
+            new TableCell({ 
+              shading: bgShading,
+              children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { before: 100, after: 100 }, children: [new TextRun({ text: startPrompt, font: "Calibri", size: 16, color: "15803D" })] })] 
+            }),
+            new TableCell({ 
+              shading: bgShading,
+              children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { before: 100, after: 100 }, children: [new TextRun({ text: motionPrompt, font: "Calibri", size: 16, color: "15803D" })] })] 
+            })
           ],
         })
       );
     });
+
+    const docChildren: any[] = [
+      // main doc title
+      new Paragraph({
+        children: [
+          new TextRun({ 
+            text: "KỊCH BẢN PHÂN CẢNH VÀ THIẾT KẾ VIDEO CHUYÊN NGHIỆP", 
+            bold: true, 
+            size: 28, // 14pt
+            font: "Calibri",
+            color: "EE8800" 
+          })
+        ],
+        alignment: AlignmentType.CENTER,
+        spacing: { before: 200, after: 100 },
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ 
+            text: "DEVELOPER MULTIPLE ENGINE REPORT & STORYBOARD", 
+            bold: true,
+            size: 16, // 8pt
+            font: "Calibri",
+            color: "64748B"
+          })
+        ],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 300 },
+      }),
+    ];
+
+    if (generatedScript.title) {
+      docChildren.push(
+        new Paragraph({
+          alignment: AlignmentType.JUSTIFIED,
+          children: [
+            new TextRun({ text: "TÊN KỊCH BẢN / SCENARIO TITLE: ", bold: true, font: "Calibri", size: 20, color: "1E293B" }),
+            new TextRun({ text: generatedScript.title, bold: true, font: "Calibri", size: 20, color: "EE8800" })
+          ],
+          spacing: { before: 100, after: 100 },
+        })
+      );
+    }
+
+    docChildren.push(
+      new Paragraph({
+        alignment: AlignmentType.JUSTIFIED,
+        children: [
+          new TextRun({ text: "Ý tưởng chính (Idea): ", bold: true, font: "Calibri", size: 18, color: "475569" }),
+          new TextRun({ text: userIdea, italics: true, font: "Calibri", size: 18, color: "0F172A" })
+        ],
+        spacing: { after: 300 },
+      }),
+
+      // Part 1: Overview
+      new Paragraph({
+        alignment: AlignmentType.LEFT,
+        children: [
+          new TextRun({ text: "1. TỔNG QUAN KỊCH BẢN (STORY OVERVIEW)", bold: true, font: "Calibri", size: 22, color: "1E293B" })
+        ],
+        spacing: { before: 200, after: 100 },
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: generatedScript.overview, font: "Calibri", size: 18, color: "334155" })
+        ],
+        alignment: AlignmentType.JUSTIFIED,
+        spacing: { after: 300 },
+      })
+    );
+
+    if (generatedScript.audioLayers && (generatedScript.audioLayers.bgm || generatedScript.audioLayers.narration)) {
+      docChildren.push(
+        new Paragraph({
+          alignment: AlignmentType.LEFT,
+          children: [
+            new TextRun({ text: "2. THIẾT KẾ ĐƯỜNG TIẾNG VÀ LỚP ÂM THANH (AUDIO LAYER CONFIG)", bold: true, font: "Calibri", size: 22, color: "1E293B" })
+          ],
+          spacing: { before: 200, after: 100 },
+        })
+      );
+
+      if (generatedScript.audioLayers.bgm) {
+        docChildren.push(
+          new Paragraph({
+            alignment: AlignmentType.JUSTIFIED,
+            children: [
+              new TextRun({ text: "• Nhạc nền (BGM Audio Track): ", bold: true, font: "Calibri", size: 18, color: "EE8800" }),
+              new TextRun({ text: generatedScript.audioLayers.bgm, font: "Calibri", size: 18, color: "334155" })
+            ],
+            spacing: { after: 80 },
+          })
+        );
+      }
+
+      if (generatedScript.audioLayers.narration) {
+        docChildren.push(
+          new Paragraph({
+            alignment: AlignmentType.JUSTIFIED,
+            children: [
+              new TextRun({ text: "• Thuyết minh (Voice-over / Narration): ", bold: true, font: "Calibri", size: 18, color: "EE8800" }),
+              new TextRun({ text: generatedScript.audioLayers.narration, font: "Calibri", size: 18, color: "334155" })
+            ],
+            spacing: { after: 200 },
+          })
+        );
+      }
+    }
+
+    if (generatedScript.keyElements && generatedScript.keyElements.length > 0) {
+      docChildren.push(
+        new Paragraph({
+          alignment: AlignmentType.LEFT,
+          children: [
+            new TextRun({ text: "3. CHỈ DẪN MỸ THUẬT VÀ PHẦN TỬ CHỦ CHỐT (KEY ELEMENTS)", bold: true, font: "Calibri", size: 22, color: "1E293B" })
+          ],
+          spacing: { before: 200, after: 100 },
+        })
+      );
+
+      generatedScript.keyElements.forEach(elem => {
+        const t = elem.type.toLowerCase();
+        let colorHex = "EE8800"; // default
+        if (t === "character") colorHex = "1D4ED8"; // blue
+        else if (t === "scene") colorHex = "15803D"; // green
+        else if (t === "prop") colorHex = "7E22CE"; // purple
+
+        docChildren.push(
+          new Paragraph({
+            alignment: AlignmentType.JUSTIFIED,
+            children: [
+              new TextRun({ text: `• [${elem.type.toUpperCase()}] ${elem.name}: `, bold: true, font: "Calibri", size: 18, color: colorHex }),
+              new TextRun({ text: elem.description || "", font: "Calibri", size: 18, color: "334155" })
+            ],
+            spacing: { after: 60 }
+          })
+        );
+        if (elem.imagePrompt) {
+          docChildren.push(
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              children: [
+                new TextRun({ text: `  Prompt tạo ảnh tham chiếu: `, bold: true, font: "Calibri", size: 16, color: "15803D" }),
+                new TextRun({ text: elem.imagePrompt, italics: true, font: "Calibri", size: 16, color: "15803D" })
+              ],
+              spacing: { after: 120 }
+            })
+          );
+        }
+      });
+    }
+
+    docChildren.push(
+      new Paragraph({
+        alignment: AlignmentType.LEFT,
+        children: [
+          new TextRun({ text: "4. BẢNG PHÂN CẢNH CHI TIẾT (DETAILED STORYBOARD)", bold: true, font: "Calibri", size: 22, color: "1E293B" })
+        ],
+        spacing: { before: 250, after: 150 },
+      }),
+      new DocxTable({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: tableRows,
+      })
+    );
 
     const doc = new Document({
       styles: {
@@ -672,92 +1026,7 @@ export default function App() {
             },
           },
         },
-        children: [
-          new Paragraph({
-            children: [new TextRun({ text: "VIDEO SCRIPT DESIGN & STORYBOARD", bold: true, size: 24, font: "Calibri" })],
-            alignment: AlignmentType.CENTER,
-            spacing: { after: 200 },
-          }),
-          ...(generatedScript.title ? [
-            new Paragraph({
-              children: [new TextRun({ text: `Tên kịch bản (Scenario Title): ${generatedScript.title}`, bold: true, font: "Calibri", size: 20 })],
-              spacing: { after: 200 },
-            })
-          ] : []),
-          new Paragraph({
-            children: [new TextRun({ text: `Ý tưởng (Idea): ${userIdea}`, italics: true, font: "Calibri", size: 18 })],
-            spacing: { after: 400 },
-          }),
-          new Paragraph({
-            children: [new TextRun({ text: "STORY OVERVIEW (TỔNG QUAN CỐT TRUYỆN)", bold: true, underline: {}, font: "Calibri", size: 18 })],
-            spacing: { after: 200 },
-          }),
-          new Paragraph({
-            children: [new TextRun({ text: generatedScript.overview, font: "Calibri", size: 18 })],
-            alignment: AlignmentType.JUSTIFIED,
-            spacing: { after: 400 },
-          }),
-          ...(generatedScript.audioLayers ? [
-            new Paragraph({
-              children: [new TextRun({ text: "AUDIO LAYER DESIGN (THIẾT KẾ ÂM THANH)", bold: true, underline: {}, font: "Calibri", size: 18 })],
-              spacing: { before: 200, after: 200 },
-            }),
-            ...(generatedScript.audioLayers.bgm ? [
-              new Paragraph({
-                children: [
-                  new TextRun({ text: "• Nhạc nền (BGM): ", bold: true, font: "Calibri", size: 18 }),
-                  new TextRun({ text: generatedScript.audioLayers.bgm, font: "Calibri", size: 18 })
-                ],
-                spacing: { after: 100 },
-              })
-            ] : []),
-            ...(generatedScript.audioLayers.narration ? [
-              new Paragraph({
-                children: [
-                  new TextRun({ text: "• Thuyết minh (Narration/Voice-over): ", bold: true, font: "Calibri", size: 18 }),
-                  new TextRun({ text: generatedScript.audioLayers.narration, font: "Calibri", size: 18 })
-                ],
-                spacing: { after: 300 },
-              })
-            ] : []),
-          ] : []),
-          ...(generatedScript.keyElements && generatedScript.keyElements.length > 0 ? [
-            new Paragraph({
-              children: [new TextRun({ text: "KEY ELEMENTS DESIGN & REFERENCE PROMPTS (media_generator_Prompts)", bold: true, underline: {}, font: "Calibri", size: 18 })],
-              spacing: { after: 200 },
-            }),
-            ...generatedScript.keyElements.flatMap(elem => [
-              new Paragraph({
-                children: [
-                  new TextRun({ text: `• ${elem.name} (${elem.type})`, bold: true, font: "Calibri", size: 18 })
-                ],
-                spacing: { after: 100 }
-              }),
-              new Paragraph({
-                children: [
-                  new TextRun({ text: `  Design Description: `, bold: true, font: "Calibri", size: 18 }),
-                  new TextRun({ text: elem.description || "", font: "Calibri", size: 18 })
-                ],
-                spacing: { after: 100 }
-              }),
-              new Paragraph({
-                children: [
-                  new TextRun({ text: `  Reference Prompt (T2I): `, bold: true, font: "Calibri", size: 18 }),
-                  new TextRun({ text: elem.imagePrompt || "", font: "Calibri", size: 18, italics: true })
-                ],
-                spacing: { before: 100, after: 300 }
-              })
-            ])
-          ] : []),
-          new Paragraph({
-            children: [new TextRun({ text: "STORYBOARD (BẢNG PHÂN CẢNH CHI TIẾT)", bold: true, underline: {}, font: "Calibri", size: 18 })],
-            spacing: { after: 200 },
-          }),
-          new DocxTable({
-            width: { size: 100, type: WidthType.PERCENTAGE },
-            rows: tableRows,
-          }),
-        ],
+        children: docChildren,
       }],
     });
 
@@ -800,7 +1069,7 @@ export default function App() {
     } catch (e) {
       // ignore
     }
-
+    
     try {
       const firstSquare = str.indexOf('[');
       const lastSquare = str.lastIndexOf(']');
@@ -818,113 +1087,34 @@ export default function App() {
   const handlePromptExport = async () => {
     if (!generatedScript) return;
 
+    let exportedJson: any = {};
+
     if (scriptType === 'Whisk') {
-      // Natural Language Prompt -> export .doc
-      const tableRows = [
-        new TableRow({
-          children: [
-            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Số TT/Cảnh", bold: true, font: "Calibri", size: 18 })] })] }),
-            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Prompt tạo ảnh Start-Frame", bold: true, font: "Calibri", size: 18 })] })] }),
-            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Prompt chuyển động (Video)", bold: true, font: "Calibri", size: 18 })] })] }),
-          ],
-        }),
-      ];
-
-      generatedScript.scenes.forEach((scene) => {
-        tableRows.push(
-          new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: String(scene.id), font: "Calibri", size: 18 })] })] }),
-              new TableCell({ children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, children: [new TextRun({ text: formatPromptValue(scene.whiskPrompt), font: "Calibri", size: 18 })] })] }),
-              new TableCell({ children: [new Paragraph({ alignment: AlignmentType.JUSTIFIED, children: [new TextRun({ text: formatPromptValue(scene.movementPrompt), font: "Calibri", size: 18 })] })] }),
-            ],
-          })
-        );
-      });
-
-      const keyElementsParagraphs: Paragraph[] = [];
-      if (generatedScript.keyElements && generatedScript.keyElements.length > 0) {
-        generatedScript.keyElements.forEach(elem => {
-          keyElementsParagraphs.push(
-            new Paragraph({
-              children: [
-                new TextRun({ text: `• ${elem.name} (${elem.type})`, bold: true, font: "Calibri", size: 18 })
-              ],
-              spacing: { after: 100 }
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: `  Mô tả: `, bold: true, font: "Calibri", size: 18 }),
-                new TextRun({ text: elem.description || "", font: "Calibri", size: 18 })
-              ],
-              spacing: { after: 100 }
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: `  Prompt tạo ảnh: `, bold: true, font: "Calibri", size: 18 }),
-                new TextRun({ text: elem.imagePrompt || "", font: "Calibri", size: 18, italics: true })
-              ],
-              spacing: { before: 100, after: 250 }
-            })
-          );
-        });
-      }
-
-      const doc = new Document({
-        styles: {
-          default: {
-            document: {
-              run: {
-                font: "Calibri",
-                size: 18,
-              },
-            },
-          },
+      exportedJson = {
+        meta: {
+          exportType: "Whisk Prompt Export",
+          idea: userIdea,
+          title: generatedScript.title || "",
+          timestamp: new Date().toISOString()
         },
-        sections: [{
-          properties: {
-            page: {
-              size: {
-                orientation: "landscape",
-              },
-            },
-          },
-          children: [
-            new Paragraph({
-              children: [new TextRun({ text: "PROMPT EXPORT - NATURAL LANGUAGE FORMAT", bold: true, size: 22, font: "Calibri" })],
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 200 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: `Ý tưởng (Idea): ${userIdea}`, italics: true, font: "Calibri", size: 18 })],
-              spacing: { after: 300 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "KEY ELEMENTS DESIGN", bold: true, underline: {}, font: "Calibri", size: 18 })],
-              spacing: { after: 200 },
-            }),
-            ...keyElementsParagraphs,
-            new Paragraph({
-              children: [new TextRun({ text: "SCENE PROMPTS (Whisk / Natural Language Format)", bold: true, underline: {}, font: "Calibri", size: 18 })],
-              spacing: { before: 200, after: 200 },
-            }),
-            new DocxTable({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              rows: tableRows,
-            }),
-          ],
-        }],
-      });
-
-      const blob = await Packer.toBlob(doc);
-      const match = userIdea.match(/"([^"]+)"/);
-      const cleanTitle = generatedScript?.title ? generatedScript.title.trim().replace(/[/\\?%*:|"<>]/g, '-') : '';
-      const fileName = cleanTitle || (match ? `Prompt_Export_${match[1]}` : `Prompt_Export_${Date.now()}`);
-      saveAs(blob, `${fileName}.doc`);
-
+        keyElements: (generatedScript.keyElements || []).map(elem => {
+          return {
+            name: elem.name,
+            type: elem.type,
+            description: elem.description,
+            imagePrompt: elem.imagePrompt || ""
+          };
+        }),
+        scenes: generatedScript.scenes.map(scene => {
+          return {
+            sceneNumber: scene.id,
+            whiskPrompt: formatPromptValue(scene.whiskPrompt),
+            movementPrompt: formatPromptValue(scene.movementPrompt)
+          };
+        })
+      };
     } else {
-      // JSON Prompt -> export .json standard format for Veo 3.1 Flash
-      const exportedJson = {
+      exportedJson = {
         meta: {
           exportType: "Veo 3.1 Flash Prompt Export",
           idea: userIdea,
@@ -947,13 +1137,13 @@ export default function App() {
           };
         })
       };
-
-      const blob = new Blob([JSON.stringify(exportedJson, null, 2)], { type: 'application/json' });
-      const match = userIdea.match(/"([^"]+)"/);
-      const cleanTitle = generatedScript?.title ? generatedScript.title.trim().replace(/[/\\?%*:|"<>]/g, '-') : '';
-      const fileName = cleanTitle || (match ? `Prompt_Export_${match[1]}` : `Prompt_Export_${Date.now()}`);
-      saveAs(blob, `${fileName}.json`);
     }
+
+    const blob = new Blob([JSON.stringify(exportedJson, null, 2)], { type: 'application/json' });
+    const match = userIdea.match(/"([^"]+)"/);
+    const cleanTitle = generatedScript?.title ? generatedScript.title.trim().replace(/[/\\?%*:|"<>]/g, '-') : '';
+    const fileName = cleanTitle || (match ? `Prompt_Export_${match[1]}` : `Prompt_Export_${Date.now()}`);
+    saveAs(blob, `${fileName}.json`);
   };
 
   const handleSaveStoryboard = () => {
@@ -1285,6 +1475,7 @@ export default function App() {
           - Compose start_frame as camera-ready still: everything visible in the very first frame must be fully resolved.
           - Paragraph structure: subject identity/pose -> wardrobe/props -> environment/background -> shot scale/composition -> lighting and color grading -> texture/detail. No psychology, nothing off-screen.
           - Lock identity markers against element descriptions. Use ImageToImage reference inputs to anchor consistency.
+          - BẮT BUỘC: Thêm đầy đủ tất cả các Element tham chiếu có liên quan vào prompt (bao gồm: character, scene, prop từ danh sách KEY ELEMENTS): miêu tả cực kỳ kỹ càng bối cảnh (scene), tả chi tiết các nhân vật (character) có tham gia xuất hiện trong cảnh, các đạo cụ (prop), và ánh sáng môi trường rõ ràng nhất để tạo sự đồng nhất bối cảnh.
           - BẮT BUỘC phải thêm cụm từ "no background music, no text, no logo." và "độ phân giải 1K." vào cuối từng prompt.
         - Video Motion prompt ('movementPrompt' field):
           - Describe motion/events unfolding from start_frame forward. Focus on what moves, changes, or is spoken. Do not re-describe static composition.
@@ -1379,17 +1570,18 @@ export default function App() {
         - Start-frame image prompt ('videoPrompt' JSON structure):
           - Compose start_frame as camera-ready still in a JSON object with keys:
             {
-              "subject_identity": "Detailed physical description of actors and poses in ${selectedLang}",
-              "wardrobe_props": "Clothing details, costume style, accessories, colors in ${selectedLang}",
-              "environment_background": "Visual setting, depth, spatial details, room elements in ${selectedLang}",
+              "subject_identity": "Detailed physical description of ALL actors, characters appearance, postures, and poses in this scene (fully describing character elements participating) in ${selectedLang}",
+              "wardrobe_props": "Clothing details, costume style, accessories, colors, and key prop elements in ${selectedLang}",
+              "environment_background": "Visual setting, background environment, depth, spatial details, room elements (fully describing scene elements) in ${selectedLang}",
               "composition_lens": "Shot scale, angle, cameras, focal length in ${selectedLang}",
-              "lighting_quality": "Lighting setup, mood, style, color grading in ${selectedLang}",
+              "lighting_quality": "Lighting setup, ambient light conditions, environmental illumination, mood, style, color grading in ${selectedLang}",
               "textures_style": "Visual style matching ${promptStyle}, rendering quality, artistic feel in ${selectedLang}",
               "no_subtitle": "Yes",
               "no_background_music": "Yes",
               "no_text": "Yes"
             }
           - No psychology, nothing off-screen. Lock identity markers against element descriptions.
+          - BẮT BUỘC MẠNH MẼ: Phải đưa đầy đủ tất cả các Key Elements của phân cảnh bao gồm Bối cảnh (Scene), Nhân vật (Character), và Đạo cụ (Prop) tương thích vào các trường tương ứng (subject_identity, wardrobe_props, environment_background, lighting_quality) để đảm bảo độ đồng nhất hình ảnh tuyệt đối.
         - Video Motion prompt ('jsonVideoPrompt' JSON structure):
           - Describe motion/events unfolding from start_frame forward in a JSON object with keys:
             {
@@ -1492,9 +1684,16 @@ export default function App() {
     } catch (err: any) {
       console.error("Prompt generation error:", err);
       const errorMsg = err.message || '';
+      if (err.name === 'AbortError' || errorMsg.includes('aborted') || errorMsg.includes('The operation was aborted')) {
+        console.warn("Prompt generation aborted.");
+        return;
+      }
       if (errorMsg.includes('API_KEY_INVALID') || errorMsg.includes('API key not found') || errorMsg.includes('403') || errorMsg.includes('401')) {
         setNeedsApiKey(true);
         alert('API Key không hợp lệ hoặc đã hết hạn. Vui lòng chọn lại API Key từ dự án Google Cloud có trả phí để tiếp tục.');
+      } else if (errorMsg.includes('429') || errorMsg.includes('RESOURCE_EXHAUSTED') || errorMsg.includes('spending cap') || errorMsg.includes('exceeded')) {
+        setSpendingCapExceeded(true);
+        alert('Dự án của bạn đã vượt quá hạn mức chi tiêu hàng tháng (spending cap) hoặc hạn mức quota tại Google AI Studio (https://ai.studio/spend). Hãy điều chỉnh hạn mức chi tiêu hoặc nhập API Key cá nhân.');
       } else {
         alert("Lỗi khi tạo kịch bản: " + (err.message || "Dịch vụ hiện không khả dụng"));
       }
@@ -1681,10 +1880,17 @@ export default function App() {
       console.error('Generation failed:', error);
       
       const errorMsg = error.message || '';
+      if (error.name === 'AbortError' || errorMsg.includes('aborted') || errorMsg.includes('The operation was aborted')) {
+        console.warn("Image generation aborted.");
+        return;
+      }
       if (errorMsg.includes('API_KEY_INVALID') || errorMsg.includes('API key not found') || errorMsg.includes('403') || errorMsg.includes('401')) {
         setNeedsApiKey(true);
         alert('API Key không hợp lệ hoặc đã hết hạn. Vui lòng chọn lại API Key từ dự án Google Cloud có trả phí để tiếp tục.');
         return;
+      } else if (errorMsg.includes('429') || errorMsg.includes('RESOURCE_EXHAUSTED') || errorMsg.includes('spending cap') || errorMsg.includes('exceeded')) {
+        setSpendingCapExceeded(true);
+        alert('Tạo ảnh thất bại: Dự án đã vượt quá hạn mức chi tiêu hàng tháng (spending cap) hoặc hạn mức quota tại Google AI Studio (https://ai.studio/spend).');
       }
       
       // Dynamic dimensions for mock images
@@ -1886,8 +2092,21 @@ export default function App() {
     } catch (error: any) {
       console.error(`Job ${jobId} failed:`, error);
       const errorMsg = error.message || '';
+      if (error.name === 'AbortError' || errorMsg.includes('aborted') || errorMsg.includes('The operation was aborted')) {
+        console.warn(`Job ${jobId} was aborted.`);
+        setVideoJobs(prev => prev.map(j => 
+          j.id === jobId ? { 
+            ...j, 
+            status: 'failed', 
+            error: "Yêu cầu đã bị hủy hoặc gián đoạn."
+          } : j
+        ));
+        return;
+      }
       if (errorMsg.includes('API_KEY_INVALID') || errorMsg.includes('API key not found') || errorMsg.includes('403') || errorMsg.includes('401')) {
         setNeedsApiKey(true);
+      } else if (errorMsg.includes('429') || errorMsg.includes('RESOURCE_EXHAUSTED') || errorMsg.includes('spending cap') || errorMsg.includes('exceeded')) {
+        setSpendingCapExceeded(true);
       }
       setVideoJobs(prev => prev.map(j => 
         j.id === jobId ? { 
@@ -1982,7 +2201,9 @@ export default function App() {
     } else if (activeRegion === 'Central') {
       regionPrompt = 'Giọng Bình Định và Phú Yên, miền Trung Việt Nam.';
     } else if (activeRegion === 'South') {
-      regionPrompt = 'Giọng Cà Mau, miền Tây Nam Bộ Việt Nam.';
+      regionPrompt = 'Giọng Sài Gòn, miền Nam Việt Nam chuẩn.';
+    } else if (activeRegion === 'Southwestern') {
+      regionPrompt = 'Giọng và accent vùng miền Tây Việt Nam (quê mùa).';
     }
 
     const speedText = ttsSpeed === 1 ? 'tốc độ bình thường' : `tốc độ ${ttsSpeed}x`;
@@ -2136,9 +2357,16 @@ Nội dung văn bản:
     } catch (error: any) {
       console.error('TTS Conversion error:', error);
       const errorMsg = error.message || '';
+      if (error.name === 'AbortError' || errorMsg.includes('aborted') || errorMsg.includes('The operation was aborted')) {
+        console.warn('TTS Conversion aborted.');
+        return;
+      }
       if (errorMsg.includes('API_KEY_INVALID') || errorMsg.includes('API key not found') || errorMsg.includes('403') || errorMsg.includes('401')) {
         setNeedsApiKey(true);
         alert('API Key không hợp lệ hoặc đã hết hạn. Vui lòng chọn lại API Key từ dự án Google Cloud có trả phí để tiếp tục.');
+      } else if (errorMsg.includes('429') || errorMsg.includes('RESOURCE_EXHAUSTED') || errorMsg.includes('spending cap') || errorMsg.includes('exceeded')) {
+        setSpendingCapExceeded(true);
+        alert('Chuyển đổi âm thanh thất bại: Dự án đã vượt quá hạn mức chi tiêu hàng tháng (spending cap) hoặc hạn mức quota tại Google AI Studio (https://ai.studio/spend).');
       } else {
         alert(`Lỗi chuyển đổi: ${error.message || 'Dịch vụ hiện không khả dụng'}`);
       }
@@ -2157,7 +2385,8 @@ Nội dung văn bản:
         'North': ' Bắc bộ Việt Nam',
         'Hue': ' Huế Việt Nam ',
         'Central': ' Trung bộ Việt Nam ',
-        'South': ' Nam bộ Việt Nam'
+        'South': ' Sài Gòn miền Nam Việt Nam',
+        'Southwestern': ' miền Tây Việt Nam (quê mùa)'
       };
       const regionPart = regionMap[ttsRegion] || ' tự nhiên';
       const previewText = `Đây là bản nghe thử cho giọng ${voiceName} với âm hưởng${regionPart} phong cách ${ttsStyle}.`;
@@ -2170,9 +2399,22 @@ Nội dung văn bản:
       const url = URL.createObjectURL(blob);
       setTtsAudioUrl(url);
       setTtsProgress(100);
-    } catch (error) {
+    } catch (error: any) {
        console.error('Preview error:', error);
-       alert('Lỗi khi nghe thử giọng.');
+       const errorMsg = error.message || '';
+       if (error.name === 'AbortError' || errorMsg.includes('aborted') || errorMsg.includes('The operation was aborted')) {
+         console.warn('Preview voice aborted.');
+         return;
+       }
+       if (errorMsg.includes('API_KEY_INVALID') || errorMsg.includes('API key not found') || errorMsg.includes('403') || errorMsg.includes('401')) {
+         setNeedsApiKey(true);
+         alert('API Key không hợp lệ hoặc đã hết hạn. Vui lòng chọn lại API Key từ dự án Google Cloud có trả phí để tiếp tục.');
+       } else if (errorMsg.includes('429') || errorMsg.includes('RESOURCE_EXHAUSTED') || errorMsg.includes('spending cap') || errorMsg.includes('exceeded')) {
+         setSpendingCapExceeded(true);
+         alert('Nghe thử thất bại: Dự án của bạn đã vượt quá hạn mức chi tiêu hàng tháng (spending cap) hoặc hạn mức quota tại Google AI Studio (https://ai.studio/spend).');
+       } else {
+         alert('Lỗi khi nghe thử giọng: ' + (error.message || 'Dịch vụ hiện không khả dụng'));
+       }
     } finally {
       setIsTtsProcessing(false);
     }
@@ -2313,6 +2555,29 @@ Nội dung văn bản:
 
   return (
     <div className="min-h-screen bg-main-bg text-text-primary selection:bg-accent selection:text-main-bg">
+      {spendingCapExceeded && (
+        <div className="bg-red-500/25 backdrop-blur-md border-b border-red-500/40 text-red-100 px-6 py-4 flex items-center justify-between gap-4 text-xs font-medium z-[1000] sticky top-0">
+          <div className="flex items-center gap-3">
+            <span className="flex h-3 w-3 relative shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            <div className="leading-snug">
+              <span className="font-extrabold uppercase tracking-widest text-red-400 mr-2 border border-red-500/30 px-1.5 py-0.5 rounded bg-black/40">[LỖI HẠN MỨC CHI TIÊU]</span>
+              <span>
+                Hạn mức chi tiêu hàng tháng (spending cap) hoặc quota của dự án hiện đã vượt quá giới hạn cho phép. Vui lòng nâng cấp gói hoặc quản lý mức chi tiêu tại <a href="https://ai.studio/spend" target="_blank" rel="noopener noreferrer" className="underline font-bold text-accent hover:text-accent-hover transition-colors">Google AI Studio Spend Page</a>, hoặc nhấp vào nút <strong className="text-white">"Enter API Key"</strong> ở góc phải menu để nhập API Key cá nhân mới của bạn.
+              </span>
+            </div>
+          </div>
+          <button 
+            onClick={() => setSpendingCapExceeded(false)}
+            className="text-red-300 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg shrink-0"
+            title="Đóng thông báo"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
       {/* Header */}
       <header className="sticky top-0 z-[100] w-full min-h-[150px] border-b border-border-subtle bg-secondary-bg/50 backdrop-blur-xl flex flex-col md:flex-row shadow-2xl">
         {/* Left Column (Logo Branding) */}
@@ -2766,7 +3031,7 @@ Nội dung văn bản:
                                   onClick={handlePromptExport}
                                   className="flex items-center gap-2 px-4 py-2 bg-accent/15 border border-accent/30 rounded-lg text-[10px] font-bold uppercase tracking-widest text-accent hover:bg-accent/30 hover:border-accent hover:text-white transition-all shadow-[0_0_15px_rgba(168,85,247,0.2)] font-extrabold"
                                 >
-                                  <Download size={14} /> Prompt Export ({scriptType === 'Whisk' ? '.doc' : '.json'})
+                                  <Download size={14} /> Prompt Export (.json)
                                 </button>
                                 <button 
                                   onClick={handleDownloadDoc}
@@ -3525,7 +3790,8 @@ Nội dung văn bản:
                                 'North': 'Miền Bắc',
                                 'Hue': 'HUẾ',
                                 'Central': 'MIỀN TRUNG',
-                                'South': 'Miền Nam'
+                                'South': 'Sài Gòn (Miền Nam)',
+                                'Southwestern': 'Miền Tây (quê mùa)'
                               };
                               return (
                                 <div key={r} className="flex-1 min-w-[80px] relative group/tooltip">
@@ -3623,6 +3889,46 @@ Nội dung văn bản:
                                   </div>
                                 </div>
                               </div>
+
+                              {voiceAgeMapping[geminiVoice] && (
+                                <motion.div 
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className="p-5 rounded-2xl bg-black/40 border border-white/5 space-y-3 shadow-xl"
+                                >
+                                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                                    <div className="flex items-center gap-2">
+                                      <span className="flex h-2 w-2 rounded-full bg-accent animate-pulse" />
+                                      <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">
+                                        Gợi ý phối hợp giọng & biểu cảm (Độ tuổi & Đối tượng)
+                                      </span>
+                                    </div>
+                                    <span className="text-[9px] font-mono px-2.5 py-0.5 rounded-full bg-accent/25 text-white border border-accent/30 font-bold uppercase tracking-wider">
+                                      {voiceAgeMapping[geminiVoice].ageGroup}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-white/50 leading-relaxed font-sans">
+                                    {voiceAgeMapping[geminiVoice].explanation}
+                                  </p>
+                                  <div className="flex items-center gap-2 flex-wrap pt-1.5">
+                                    <span className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Biểu cảm phù hợp nhất:</span>
+                                    {voiceAgeMapping[geminiVoice].expressions.map((exp) => (
+                                      <button
+                                        key={exp}
+                                        onClick={() => setTtsStyle(exp)}
+                                        className={`text-[10px] px-3 py-1 rounded-lg border font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+                                          ttsStyle === exp
+                                            ? 'bg-accent border-accent text-text-dark font-extrabold shadow-[0_0_10px_rgba(238,136,0,0.3)]'
+                                            : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/20'
+                                        }`}
+                                      >
+                                        {ttsStyle === exp && <Check size={10} />}
+                                        {exp}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
 
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-4">
@@ -3787,9 +4093,19 @@ Nội dung văn bản:
                                             onChange={(e) => updateConversationNode(node.id, { region: e.target.value })}
                                             className="bg-black/60 border border-white/10 rounded-xl px-4 py-1.5 text-accent/60 text-[10px] focus:border-accent appearance-none cursor-pointer pr-8 uppercase font-bold tracking-wider"
                                           >
-                                            {ttsRegions.map(r => (
-                                              <option key={r} value={r} className="bg-secondary-bg text-white lowercase font-sans">{r}</option>
-                                            ))}
+                                            {ttsRegions.map(r => {
+                                              const labelMap: { [key: string]: string } = {
+                                                'Default': 'Mặc định',
+                                                'North': 'Miền Bắc',
+                                                'Hue': 'Huế',
+                                                'Central': 'Miền Trung',
+                                                'South': 'Sài Gòn (M.Nam)',
+                                                'Southwestern': 'Miền Tây (Quê mùa)'
+                                              };
+                                              return (
+                                                <option key={r} value={r} className="bg-secondary-bg text-white font-sans">{labelMap[r] || r}</option>
+                                              );
+                                            })}
                                           </select>
                                           <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
                                         </div>
@@ -3809,6 +4125,39 @@ Nội dung văn bản:
                                       placeholder={`Nội dung thoại cho ${node.speaker}...`}
                                       className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-white text-sm focus:outline-none focus:border-accent/40 transition-all resize-none leading-relaxed h-[100px] custom-scrollbar"
                                     />
+
+                                    {voiceAgeMapping[node.speaker] && (
+                                      <div className="p-4 rounded-2xl bg-accent/5 border border-accent/15 space-y-2 text-left">
+                                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                                          <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-white/70 font-semibold">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                                            Gợi ý biểu cảm và độ tuổi
+                                          </div>
+                                          <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-accent/25 text-white font-bold uppercase tracking-wider">
+                                            {voiceAgeMapping[node.speaker].ageGroup}
+                                          </span>
+                                        </div>
+                                        <p className="text-[11px] text-white/50 leading-relaxed font-sans">
+                                          {voiceAgeMapping[node.speaker].explanation}
+                                        </p>
+                                        <div className="flex items-center gap-1.5 flex-wrap pt-1 shrink-0">
+                                          <span className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Gợi ý kết hợp:</span>
+                                          {voiceAgeMapping[node.speaker].expressions.map(exp => (
+                                            <button
+                                              key={exp}
+                                              onClick={() => updateConversationNode(node.id, { style: exp })}
+                                              className={`text-[9px] px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
+                                                node.style === exp
+                                                  ? 'bg-accent border-accent text-text-dark font-extrabold shadow-[0_0_8px_rgba(238,136,0,0.25)]'
+                                                  : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                                              }`}
+                                            >
+                                              {exp}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
                                   </motion.div>
                                 ))}
                               </div>
@@ -4455,7 +4804,7 @@ Nội dung văn bản:
                                   className="flex items-center gap-2 px-4 py-2 bg-accent/15 border border-accent/20 hover:bg-accent/30 hover:border-accent hover:text-white rounded-lg text-[10px] font-extrabold uppercase tracking-widest text-accent transition-all shadow-[0_0_15px_rgba(168,85,247,0.2)] cursor-pointer"
                                   title="Xuất prompt về máy tính"
                                 >
-                                  <Download size={14} /> Prompt Export ({scriptType === 'Whisk' ? '.doc' : '.json'})
+                                  <Download size={14} /> Prompt Export (.json)
                                 </button>
                               </div>
                             </div>
@@ -4881,6 +5230,12 @@ Nội dung văn bản:
               </div>
 
               <div className="space-y-4">
+                {spendingCapExceeded && (
+                  <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-200 text-xs leading-relaxed space-y-1">
+                    <p className="font-bold uppercase tracking-wider text-red-400">[Hạn mức dự án đã hết]</p>
+                    <p>Dự án mặc định hiện tại đã hết hạn mức chi tiêu hàng tháng. Bạn cần cung cấp API Key cá nhân của riêng bạn từ Google AI Studio để tiếp tục thực hiện các tác vụ tạo kịch bản, lời thoại (TTS), hình ảnh và video.</p>
+                  </div>
+                )}
                 <p className="text-sm text-text-primary/70 leading-relaxed">
                   Vui lòng nhập API Key từ <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-accent underline hover:text-accent-hover transition-colors font-bold">Google AI Studio</a> để sử dụng các mô hình (Gemini 3.1, Veo 3.1).
                 </p>
